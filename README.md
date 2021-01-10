@@ -5,9 +5,9 @@
 [Репозиторий с клиентской частью](https://github.com/websega/todor-client.git)
 
 #### Scripts server
-- Install packages    |```npm i```
-- Start server        |```npm run start```
-- Start nodemon     |```npm run dev```
+- Install packages    ```npm i```
+- Start server        ```npm run start```
+- Start nodemon     ```npm run dev```
 
 Для конфигурации сервера в папке `config` необходимо создать файл `default.json`:
 
