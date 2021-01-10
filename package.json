@@ -10,6 +10,10 @@
   },
   "author": "Sergey Vakhramov <vsa8813@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/websega/todor-server.git"
+  },
   "devDependencies": {
     "nodemon": "^2.0.6"
   },
