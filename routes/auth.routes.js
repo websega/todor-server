@@ -15,7 +15,10 @@ router.post(
   '/registration',
   [
     check('email', 'Uncorrect email').isEmail(),
-    check('name', 'Uncorrect username').isLength({ min: 4 }),
+    check(
+      'username',
+      'Username mast be longer than 4 and shorter than 15'
+    ).isLength({ min: 4, max: 15 }),
     check(
       'password',
       'Password mast be longer than 4 and shorter than 20'
@@ -29,7 +32,7 @@ router.post(
         return res.status(400).json({ message: 'Uncorrect request', errors });
       }
 
-      const { name, email, password } = req.body;
+      const { username, email, password } = req.body;
 
       const candidate = await User.findOne({ email });
 
@@ -40,7 +43,7 @@ router.post(
       }
 
       const hashPassword = await bcrypt.hash(password, 8);
-      const user = new User({ name, email, password: hashPassword });
+      const user = new User({ username, email, password: hashPassword });
       await user.save();
 
       return res.json({ message: 'User was created' });
@@ -53,6 +56,7 @@ router.post(
 
 router.post('/login', async (req, res) => {
   try {
+    console.log(req.body);
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
@@ -75,7 +79,7 @@ router.post('/login', async (req, res) => {
       token,
       user: {
         id: user.id,
-        name: user.name,
+        username: user.username,
         email: user.email,
         folders: user.folders,
         avatar: user.avatar,
@@ -89,6 +93,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/auth', authMiddleware, async (req, res) => {
   try {
+    console.log(req.user);
     const user = await User.findOne({ _id: req.user.id });
 
     const token = jwt.sign({ id: user.id }, config.get('secretKey'), {
@@ -99,7 +104,7 @@ router.get('/auth', authMiddleware, async (req, res) => {
       token,
       user: {
         id: user.id,
-        name: user.name,
+        username: user.username,
         email: user.email,
         folders: user.folders,
         avatar: user.avatar,
