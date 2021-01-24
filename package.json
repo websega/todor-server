@@ -62,7 +62,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts}": [
+    "*.ts": [
       "npm run lint:fix"
     ]
   }
