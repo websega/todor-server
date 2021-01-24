@@ -4,47 +4,41 @@ import Folder, { TaskType } from '../models/Folder';
 
 const folderRouter = Router();
 
-folderRouter.post(
-  '/add-folder',
-  async (req: Request, res: Response): Promise<any> => {
-    try {
-      const { userId, name, colorId } = req.body;
+folderRouter.post('/add-folder', async (req: Request, res: Response) => {
+  try {
+    const { userId, name, colorId } = req.body;
 
-      const folder = new Folder({ userId, name, colorId });
+    const folder = new Folder({ userId, name, colorId });
 
-      await folder.save();
+    await folder.save();
 
-      return res.json({ message: `A folder named ${name} has been created` });
-    } catch (error) {
-      console.log(error);
-      return res.send({ message: 'Server error' });
-    }
+    return res.json({ message: `A folder named ${name} has been created` });
+  } catch (error) {
+    console.log(error);
+    return res.send({ message: 'Server error' });
   }
-);
+});
 
-folderRouter.get(
-  '/get-all/:userId',
-  async (req: Request, res: Response): Promise<any> => {
-    try {
-      const { userId } = req.params;
+folderRouter.get('/get-all/:userId', async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
 
-      const folders = await Folder.find({ userId });
+    const folders = await Folder.find({ userId });
 
-      if (!folders.length) {
-        return res.status(404).json({ message: 'Folders not found!' });
-      }
-
-      return res.json({ folders });
-    } catch (error) {
-      console.log(error);
-      return res.send({ message: 'Server error' });
+    if (!folders.length) {
+      return res.status(404).json({ message: 'Folders not found!' });
     }
+
+    return res.json({ folders });
+  } catch (error) {
+    console.log(error);
+    return res.send({ message: 'Server error' });
   }
-);
+});
 
 folderRouter.post(
   '/add-task/:folderId',
-  async (req: Request, res: Response): Promise<any> => {
+  async (req: Request, res: Response) => {
     try {
       const { folderId } = req.params;
       const newTask = req.body;
@@ -69,7 +63,7 @@ folderRouter.post(
 
 folderRouter.put(
   '/update-task/:folderId',
-  async (req: Request, res: Response): Promise<any> => {
+  async (req: Request, res: Response) => {
     try {
       const { folderId } = req.params;
       const newTask: TaskType = req.body;
@@ -80,16 +74,15 @@ folderRouter.put(
         return res.status(404).json({ message: 'Folder not found!' });
       }
 
-      folder.tasks.forEach((task: TaskType) => {
-        if (task._id === newTask._id) {
-          task.title = newTask.title;
-          task.description = newTask.description;
-          task.date = newTask.date;
-          task.completed = newTask.completed;
-          task.important = newTask.important;
-          task.deleted = newTask.deleted;
-        }
-      });
+      const taskIndex = folder.tasks.findIndex(
+        (task) => task._id === newTask._id
+      );
+
+      folder.tasks = [
+        ...folder.tasks.slice(0, taskIndex),
+        newTask,
+        ...folder.tasks.slice(taskIndex + 1),
+      ];
 
       await Folder.updateOne({ _id: folderId }, folder);
 
