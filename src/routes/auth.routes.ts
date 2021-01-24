@@ -1,17 +1,18 @@
-const Router = require('express');
+import { Router, Request, Response } from 'express';
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { check, validationResult } = require('express-validator');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { check, validationResult } from 'express-validator';
 
-const config = require('config');
+import config from 'config';
 
-const User = require('../models/User');
+import User from '../models/User';
 
-const router = new Router();
-const authMiddleware = require('../middleware/auth.middleware');
+import authMiddleware from '../middleware/auth.middleware';
 
-router.post(
+const authRouter = Router();
+
+authRouter.post(
   '/registration',
   [
     check('email', 'Uncorrect email').isEmail(),
@@ -24,7 +25,7 @@ router.post(
       'Password mast be longer than 4 and shorter than 20'
     ).isLength({ min: 4, max: 20 }),
   ],
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     try {
       const errors = validationResult(req);
 
@@ -49,15 +50,16 @@ router.post(
       return res.json({ message: 'User was created' });
     } catch (error) {
       console.log(error);
-      res.send({ message: 'Server error' });
+      return res.send({ message: 'Server error' });
     }
   }
 );
 
-router.post('/login', async (req, res) => {
+type Body = { email: string; password: string };
+
+authRouter.post('/login', async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
-    const { email, password } = req.body;
+    const { email, password }: Body = req.body;
 
     const user = await User.findOne({ email });
 
@@ -81,39 +83,56 @@ router.post('/login', async (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        folders: user.folders,
         avatar: user.avatar,
       },
     });
   } catch (error) {
     console.log(error);
-    res.send({ message: 'Server error' });
+    return res.send({ message: 'Server error' });
   }
 });
 
-router.get('/auth', authMiddleware, async (req, res) => {
-  try {
-    console.log(req.user);
-    const user = await User.findOne({ _id: req.user.id });
+type UserType = {
+  id: string;
+};
 
-    const token = jwt.sign({ id: user.id }, config.get('secretKey'), {
-      expiresIn: '1h',
-    });
+interface IUserAuthRequest extends Request {
+  user?: UserType;
+}
 
-    return res.json({
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        folders: user.folders,
-        avatar: user.avatar,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    res.send({ message: 'Server error' });
+authRouter.get(
+  '/auth',
+  authMiddleware,
+  async (req: IUserAuthRequest, res: Response) => {
+    if (!req.user) {
+      return null;
+    }
+
+    try {
+      const user = await User.findOne({ _id: req.user.id });
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      const token = jwt.sign({ id: user.id }, config.get('secretKey'), {
+        expiresIn: '1h',
+      });
+
+      return res.json({
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          avatar: user.avatar,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      return res.send({ message: 'Server error' });
+    }
   }
-});
+);
 
-module.exports = router;
+export default authRouter;

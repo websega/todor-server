@@ -2,11 +2,14 @@
   "name": "server-todor",
   "version": "1.0.0",
   "description": "Todor server",
-  "main": "index.js",
+  "main": "index.ts",
   "private": true,
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "ts-node src/index.ts",
+    "start": "nodemon src/index.ts",
+    "build": "tsc -p .",
+    "lint": "eslint . --ext .js,.ts",
+    "lint:fix": "eslint . --ext .ts,.js --fix --color"
   },
   "author": "Sergey Vakhramov <vsa8813@gmail.com>",
   "license": "MIT",
@@ -15,7 +18,26 @@
     "url": "https://github.com/websega/todor-server.git"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "@commitlint/cli": "^11.0.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/config": "0.0.38",
+    "@types/express": "^4.17.11",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/node": "^14.14.22",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "cz-customizable": "^6.3.0",
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.3",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,5 +46,24 @@
     "express-validator": "^6.9.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.10"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": "config/git/commitizen.js"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS -g './config/git/commitlint.js'"
+    }
+  },
+  "lint-staged": {
+    "*.{ts}": [
+      "npm run lint:fix"
+    ]
   }
 }
