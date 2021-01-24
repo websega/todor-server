@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import { Router, Request, Response } from 'express';
 import Folder, { TaskType } from '../models/Folder';
 
@@ -75,7 +74,7 @@ folderRouter.put(
       }
 
       const taskIndex = folder.tasks.findIndex(
-        (task) => task._id === newTask._id
+        (task) => task.id === newTask.id
       );
 
       folder.tasks = [
