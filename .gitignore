@@ -1,5 +1,8 @@
 # node
 node_modules
 
-#config file
+# build
+dist
+
+# config file
 default.json
