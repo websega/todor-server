@@ -11,7 +11,10 @@ folderRouter.post('/add-folder', async (req: Request, res: Response) => {
 
     await folder.save();
 
-    return res.json({ message: `A folder named ${name} has been created` });
+    return res.json({
+      message: `A folder named ${name} has been created`,
+      folder,
+    });
   } catch (error) {
     console.log(error);
     return res.send({ message: 'Server error' });
