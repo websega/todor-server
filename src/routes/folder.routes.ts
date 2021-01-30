@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import Folder, { TaskType } from '../models/Folder';
+import Folder from '../models/Folder';
 
 const folderRouter = Router();
 
@@ -63,37 +63,34 @@ folderRouter.post(
   }
 );
 
-folderRouter.put(
-  '/update-task/:folderId',
-  async (req: Request, res: Response) => {
-    try {
-      const { folderId } = req.params;
-      const newTask: TaskType = req.body;
+folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
+  try {
+    const folderId: string = req.query.folderId as string;
+    const taskId: string = req.query.taskId as string;
+    const completed: boolean = req.body;
 
-      const folder = await Folder.findOne({ _id: folderId });
+    const folder = await Folder.findOne({ _id: folderId });
 
-      if (!folder) {
-        return res.status(404).json({ message: 'Folder not found!' });
-      }
-
-      const taskIndex = folder.tasks.findIndex(
-        (task) => task.id === newTask.id
-      );
-
-      folder.tasks = [
-        ...folder.tasks.slice(0, taskIndex),
-        newTask,
-        ...folder.tasks.slice(taskIndex + 1),
-      ];
-
-      await Folder.updateOne({ _id: folderId }, folder);
-
-      return res.json({ folder });
-    } catch (error) {
-      console.log(error);
-      return res.send({ message: 'Server error' });
+    if (!folder) {
+      return res.status(404).json({ message: 'Folder not found in database!' });
     }
+
+    const newTasks = folder.tasks.map((task) => {
+      if (task.id === taskId) {
+        return { ...task, completed };
+      }
+      return task;
+    });
+
+    folder.tasks = newTasks;
+
+    await Folder.updateOne({ _id: folderId }, folder);
+
+    return res.send({ message: 'Task updated' });
+  } catch (error) {
+    console.log(error);
+    return res.send({ message: 'Server error' });
   }
-);
+});
 
 export default folderRouter;
