@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import Folder from '../models/Folder';
+import Folder, { TaskType } from '../models/Folder';
 
 const folderRouter = Router();
 
@@ -38,36 +38,33 @@ folderRouter.get('/get-all/:userId', async (req: Request, res: Response) => {
   }
 });
 
-folderRouter.post(
-  '/add-task/:folderId',
-  async (req: Request, res: Response) => {
-    try {
-      const { folderId } = req.params;
-      const newTask = req.body;
+folderRouter.post('/add-task/', async (req: Request, res: Response) => {
+  try {
+    const folderId: string = req.query.folderId as string;
+    const newTask: TaskType = req.body;
 
-      const folder = await Folder.findOne({ _id: folderId });
+    const folder = await Folder.findOne({ _id: folderId });
 
-      if (!folder) {
-        return res.status(404).json({ message: 'Folder not found!' });
-      }
-
-      folder.tasks.push(newTask);
-
-      await folder.save();
-
-      return res.json({ folder });
-    } catch (error) {
-      console.log(error);
-      return res.send({ message: 'Server error' });
+    if (!folder) {
+      return res.status(404).json({ message: 'Folder not found!' });
     }
+
+    folder.tasks.push(newTask);
+
+    await folder.save();
+
+    return res.send({ message: 'Server error' });
+  } catch (error) {
+    console.log(error);
+    return res.send({ message: 'Server error' });
   }
-);
+});
 
 folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
   try {
     const folderId: string = req.query.folderId as string;
     const taskId: string = req.query.taskId as string;
-    const completed: boolean = req.body;
+    const { completed } = req.body;
 
     const folder = await Folder.findOne({ _id: folderId });
 
