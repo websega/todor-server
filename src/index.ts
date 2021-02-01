@@ -30,7 +30,7 @@ const start = async (): Promise<void> => {
     });
   } catch (error) {
     console.log(error);
-    return process.exit(1);
+    process.exitCode = 1;
   }
 };
 
