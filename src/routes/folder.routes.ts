@@ -83,7 +83,7 @@ folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
 
     await Folder.updateOne({ _id: folderId }, folder);
 
-    return res.send({ message: 'Task updated' });
+    return res.send({ message: 'Task was marked as completed' });
   } catch (error) {
     console.log(error);
     return res.send({ message: 'Server error' });
@@ -112,7 +112,40 @@ folderRouter.patch('/important-task/', async (req: Request, res: Response) => {
 
     await Folder.updateOne({ _id: folderId }, folder);
 
-    return res.send({ message: 'Task was marked as important important' });
+    return res.send({ message: 'Task was marked as important' });
+  } catch (error) {
+    console.log(error);
+    return res.send({ message: 'Server error' });
+  }
+});
+
+folderRouter.patch('/delete-task/', async (req: Request, res: Response) => {
+  try {
+    const folderId: string = req.query.folderId as string;
+    const taskId: string = req.query.taskId as string;
+    console.log(
+      '🚀 ~ file: folder.routes.ts ~ line 126 ~ folderRouter.patch ~ taskId',
+      taskId
+    );
+
+    const folder = await Folder.findOne({ _id: folderId });
+
+    if (!folder) {
+      return res.status(404).json({ message: 'Folder not found in database!' });
+    }
+
+    const newTasks = folder.tasks.map((task) => {
+      if (task.id === taskId) {
+        return { ...task, deleted: !task.deleted };
+      }
+      return task;
+    });
+
+    folder.tasks = newTasks;
+
+    await Folder.updateOne({ _id: folderId }, folder);
+
+    return res.send({ message: 'Task was marked as deleted' });
   } catch (error) {
     console.log(error);
     return res.send({ message: 'Server error' });
