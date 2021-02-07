@@ -123,10 +123,6 @@ folderRouter.patch('/delete-task/', async (req: Request, res: Response) => {
   try {
     const folderId: string = req.query.folderId as string;
     const taskId: string = req.query.taskId as string;
-    console.log(
-      '🚀 ~ file: folder.routes.ts ~ line 126 ~ folderRouter.patch ~ taskId',
-      taskId
-    );
 
     const folder = await Folder.findOne({ _id: folderId });
 
@@ -146,6 +142,19 @@ folderRouter.patch('/delete-task/', async (req: Request, res: Response) => {
     await Folder.updateOne({ _id: folderId }, folder);
 
     return res.send({ message: 'Task was marked as deleted' });
+  } catch (error) {
+    console.log(error);
+    return res.send({ message: 'Server error' });
+  }
+});
+
+folderRouter.patch('/delete-folder/', async (req: Request, res: Response) => {
+  try {
+    const folderId: string = req.query.folderId as string;
+
+    await Folder.deleteOne({ _id: folderId });
+
+    return res.send({ message: 'Folder was  deleted' });
   } catch (error) {
     console.log(error);
     return res.send({ message: 'Server error' });
