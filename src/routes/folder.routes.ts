@@ -148,6 +148,34 @@ folderRouter.patch('/delete-task/', async (req: Request, res: Response) => {
   }
 });
 
+folderRouter.patch(
+  '/clear-deleted-tasks/',
+  async (req: Request, res: Response) => {
+    try {
+      const folderId: string = req.query.folderId as string;
+
+      const folder = await Folder.findOne({ _id: folderId });
+
+      if (!folder) {
+        return res
+          .status(404)
+          .json({ message: 'Folder not found in database!' });
+      }
+
+      const newTasks = folder.tasks.filter((task) => !task.deleted);
+
+      folder.tasks = newTasks;
+
+      await Folder.updateOne({ _id: folderId }, folder);
+
+      return res.send({ message: 'Task was marked as deleted' });
+    } catch (error) {
+      console.log(error);
+      return res.send({ message: 'Server error' });
+    }
+  }
+);
+
 folderRouter.patch('/delete-folder/', async (req: Request, res: Response) => {
   try {
     const folderId: string = req.query.folderId as string;
