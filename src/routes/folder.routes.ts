@@ -3,9 +3,15 @@ import Folder, { TaskType } from '../models/Folder';
 
 const folderRouter = Router();
 
+type AddTaskBodyType = {
+  userId: string;
+  name: string;
+  colorId: string;
+};
+
 folderRouter.post('/add-folder', async (req: Request, res: Response) => {
   try {
-    const { userId, name, colorId } = req.body;
+    const { userId, name, colorId }: AddTaskBodyType = req.body;
 
     const folder = new Folder({ userId, name, colorId });
 
@@ -53,12 +59,51 @@ folderRouter.post('/add-task/', async (req: Request, res: Response) => {
 
     await folder.save();
 
-    return res.send({ message: 'Server error' });
+    return res.send({ message: 'Task was been added!' });
   } catch (error) {
     console.log(error);
     return res.send({ message: 'Server error' });
   }
 });
+
+type DescriptionBodyType = {
+  descriptionText: string;
+};
+
+folderRouter.post(
+  '/add-task-description/',
+  async (req: Request, res: Response) => {
+    try {
+      const folderId: string = req.query.folderId as string;
+      const taskId: string = req.query.taskId as string;
+      const { descriptionText }: DescriptionBodyType = req.body;
+
+      const folder = await Folder.findOne({ _id: folderId });
+
+      if (!folder) {
+        return res
+          .status(404)
+          .json({ message: 'Folder not found in database!' });
+      }
+
+      const newTasks = folder.tasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, description: descriptionText };
+        }
+        return task;
+      });
+
+      folder.tasks = newTasks;
+
+      await Folder.updateOne({ _id: folderId }, folder);
+
+      return res.send({ message: 'Task was marked as completed' });
+    } catch (error) {
+      console.log(error);
+      return res.send({ message: 'Server error' });
+    }
+  }
+);
 
 folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
   try {
