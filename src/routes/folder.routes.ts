@@ -105,11 +105,11 @@ folderRouter.post(
   }
 );
 
-folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
+folderRouter.patch('/task-property/', async (req: Request, res: Response) => {
   try {
     const folderId: string = req.query.folderId as string;
     const taskId: string = req.query.taskId as string;
-    const { completed } = req.body;
+    const propName: keyof TaskType = req.query.propName as keyof TaskType;
 
     const folder = await Folder.findOne({ _id: folderId });
 
@@ -119,7 +119,7 @@ folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
 
     const newTasks = folder.tasks.map((task) => {
       if (task.id === taskId) {
-        return { ...task, completed };
+        return { ...task, [propName]: !task[propName] };
       }
       return task;
     });
@@ -128,65 +128,7 @@ folderRouter.patch('/completed-task/', async (req: Request, res: Response) => {
 
     await Folder.updateOne({ _id: folderId }, folder);
 
-    return res.send({ message: 'Task was marked as completed' });
-  } catch (error) {
-    console.log(error);
-    return res.send({ message: 'Server error' });
-  }
-});
-
-folderRouter.patch('/important-task/', async (req: Request, res: Response) => {
-  try {
-    const folderId: string = req.query.folderId as string;
-    const taskId: string = req.query.taskId as string;
-
-    const folder = await Folder.findOne({ _id: folderId });
-
-    if (!folder) {
-      return res.status(404).json({ message: 'Folder not found in database!' });
-    }
-
-    const newTasks = folder.tasks.map((task) => {
-      if (task.id === taskId) {
-        return { ...task, important: !task.important };
-      }
-      return task;
-    });
-
-    folder.tasks = newTasks;
-
-    await Folder.updateOne({ _id: folderId }, folder);
-
-    return res.send({ message: 'Task was marked as important' });
-  } catch (error) {
-    console.log(error);
-    return res.send({ message: 'Server error' });
-  }
-});
-
-folderRouter.patch('/delete-task/', async (req: Request, res: Response) => {
-  try {
-    const folderId: string = req.query.folderId as string;
-    const taskId: string = req.query.taskId as string;
-
-    const folder = await Folder.findOne({ _id: folderId });
-
-    if (!folder) {
-      return res.status(404).json({ message: 'Folder not found in database!' });
-    }
-
-    const newTasks = folder.tasks.map((task) => {
-      if (task.id === taskId) {
-        return { ...task, deleted: !task.deleted };
-      }
-      return task;
-    });
-
-    folder.tasks = newTasks;
-
-    await Folder.updateOne({ _id: folderId }, folder);
-
-    return res.send({ message: 'Task was marked as deleted' });
+    return res.send({ message: `Task property ${propName} was be toggled` });
   } catch (error) {
     console.log(error);
     return res.send({ message: 'Server error' });
