@@ -4,5 +4,8 @@ node_modules
 # build
 dist
 
+#static files
+static
+
 # config file
 default.json

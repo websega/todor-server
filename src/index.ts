@@ -2,6 +2,7 @@
 import express, { Application } from 'express';
 import mongoose from 'mongoose';
 import config from 'config';
+import fileUpload from 'express-fileupload';
 
 import authRouter from './routes/auth.routes';
 import folderRouter from './routes/folder.routes';
@@ -12,8 +13,10 @@ const app: Application = express();
 const port: number = config.get<number>('serverPort');
 const dbUrl: string = config.get<string>('dbUrl');
 
+app.use(fileUpload({}));
 app.use(corsMiddleware);
 app.use(express.json());
+app.use(express.static('static'));
 app.use('/api/auth', authRouter);
 app.use('/api/folder', folderRouter);
 

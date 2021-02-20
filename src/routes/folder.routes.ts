@@ -1,5 +1,10 @@
 import { Router, Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import config from 'config';
+import fs from 'fs';
 import Folder, { TaskType } from '../models/Folder';
+import User from '../models/User';
+import authMiddleware from '../middleware/auth.middleware';
 
 const folderRouter = Router();
 
@@ -163,7 +168,7 @@ folderRouter.patch(
   }
 );
 
-folderRouter.patch('/delete-folder/', async (req: Request, res: Response) => {
+folderRouter.delete('/delete-folder/', async (req: Request, res: Response) => {
   try {
     const folderId: string = req.query.folderId as string;
 
@@ -175,5 +180,74 @@ folderRouter.patch('/delete-folder/', async (req: Request, res: Response) => {
     return res.send({ message: 'Server error' });
   }
 });
+
+type UserType = {
+  id: string;
+};
+
+interface IAvatarRequest extends Request {
+  files?: any;
+  user?: UserType;
+}
+
+folderRouter.post(
+  '/avatar/',
+  authMiddleware,
+  async (req: IAvatarRequest, res: Response) => {
+    if (!req.user) {
+      return null;
+    }
+    try {
+      const { file } = req.files;
+
+      const user = await User.findById({ _id: req.user.id });
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      const avatarName = `${uuidv4()}.jpg`;
+
+      file.mv(`${config.get('staticPath')}\\${avatarName}`);
+
+      user.avatar = avatarName;
+
+      await user.save();
+
+      return res.json(user);
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({ message: 'Upload avatar error' });
+    }
+  }
+);
+
+folderRouter.delete(
+  '/avatar-delete/',
+  authMiddleware,
+  async (req: IAvatarRequest, res: Response) => {
+    if (!req.user) {
+      return null;
+    }
+    try {
+      const user = await User.findById({ _id: req.user.id });
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      fs.unlinkSync(`${config.get('staticPath')}\\${user.avatar}`);
+
+      user.avatar = '';
+
+      await user.save();
+
+      return res.json(user);
+    } catch (e) {
+      console.log(e);
+      return res.status(400).json({ message: 'Delete avatar error' });
+    }
+  }
+);
 
 export default folderRouter;
