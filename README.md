@@ -16,6 +16,7 @@
 {
   "serverPort": 5000,
   "dbUrl": "вставьте сюда connection string из диалога подключения к кластеру",
-  "secretKey": "произвольный секретный ключ"
+  "secretKey": "произвольный секретный ключ",
+  "staticPath": "G:\\path\\server\\static"
 }
 ```
