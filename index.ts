@@ -13,7 +13,7 @@ import filePathMiddleware from './src/middleware/filepath.middleware';
 
 const app: Application = express();
 
-const port = process.env.PORT || config.get<number | string>('serverPort');
+const port = process.env.PORT || config.get<number>('serverPort');
 
 const dbUrl: string = config.get<string>('dbUrl');
 
