@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import path from 'path';
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import config from 'config';
 import fileUpload from 'express-fileupload';
@@ -24,6 +24,10 @@ app.use(express.json());
 app.use(express.static('static'));
 app.use('/api/auth', authRouter);
 app.use('/api/folder', folderRouter);
+
+app.get('/', (req: Request, res: Response) => {
+  res.sendStatus(200);
+});
 
 const start = async (): Promise<void> => {
   try {
