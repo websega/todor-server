@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import config from 'config';
 import fs from 'fs';
 import Folder, { TaskType } from '../models/Folder';
 import User from '../models/User';
@@ -208,7 +207,7 @@ folderRouter.post(
 
       const avatarName = `${uuidv4()}.jpg`;
 
-      file.mv(`${config.get('staticPath')}\\${avatarName}`);
+      file.mv(`${req.filePath}\\${avatarName}`);
 
       user.avatar = avatarName;
 
@@ -236,7 +235,7 @@ folderRouter.delete(
         return res.status(404).json({ message: 'User not found' });
       }
 
-      fs.unlinkSync(`${config.get('staticPath')}\\${user.avatar}`);
+      fs.unlinkSync(`${req.filePath}\\${user.avatar}`);
 
       user.avatar = '';
 

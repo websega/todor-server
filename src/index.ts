@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import path from 'path';
 import express, { Application } from 'express';
 import mongoose from 'mongoose';
 import config from 'config';
@@ -8,13 +9,17 @@ import authRouter from './routes/auth.routes';
 import folderRouter from './routes/folder.routes';
 
 import corsMiddleware from './middleware/cors.middleware';
+import filePathMiddleware from './middleware/filepath.middleware';
 
 const app: Application = express();
-const port: number = config.get<number>('serverPort');
+
+const port = process.env.PORT || config.get<number | string>('serverPort');
+
 const dbUrl: string = config.get<string>('dbUrl');
 
 app.use(fileUpload({}));
 app.use(corsMiddleware);
+app.use(filePathMiddleware(path));
 app.use(express.json());
 app.use(express.static('static'));
 app.use('/api/auth', authRouter);
