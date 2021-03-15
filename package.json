@@ -1,6 +1,11 @@
 {
   "name": "server-todor",
   "version": "1.0.0",
+  "engines": {
+    "node": "14.15.1",
+    "npm": "6.14.0",
+    "yarn": "1.22.4"
+  },
   "description": "Todor server",
   "main": "index.ts",
   "private": true,
