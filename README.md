@@ -6,8 +6,8 @@
 
 #### Scripts server
 - Install packages    ```npm i```
-- Start server        ```npm run dev```
-- Start nodemon     ```npm run start```
+- Start server        ```npm run start```
+- Start nodemon     ```npm run dev```
 - Compile build    ```npm run build```
 
 Для конфигурации сервера в папке `config` необходимо создать файл `default.json`:

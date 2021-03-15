@@ -5,11 +5,11 @@ import mongoose from 'mongoose';
 import config from 'config';
 import fileUpload from 'express-fileupload';
 
-import authRouter from './routes/auth.routes';
-import folderRouter from './routes/folder.routes';
+import authRouter from './src/routes/auth.routes';
+import folderRouter from './src/routes/folder.routes';
 
-import corsMiddleware from './middleware/cors.middleware';
-import filePathMiddleware from './middleware/filepath.middleware';
+import corsMiddleware from './src/middleware/cors.middleware';
+import filePathMiddleware from './src/middleware/filepath.middleware';
 
 const app: Application = express();
 
