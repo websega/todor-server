@@ -26,7 +26,10 @@ export default (
       return res.status(401).json({ message: 'Auth error' });
     }
 
-    const decoded = jwt.verify(token, config.get('secretKey'));
+    const decoded = jwt.verify(
+      token,
+      process.env.secretKey || config.get('secretKey')
+    );
 
     req.user = decoded;
     next();

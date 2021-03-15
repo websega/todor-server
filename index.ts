@@ -15,7 +15,7 @@ const app: Application = express();
 
 const port = process.env.PORT || config.get<number>('serverPort');
 
-const dbUrl: string = config.get<string>('dbUrl');
+const dbUrl: string = process.env.dbUrl || config.get<string>('dbUrl');
 
 app.use(fileUpload({}));
 app.use(corsMiddleware);
