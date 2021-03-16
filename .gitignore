@@ -5,7 +5,7 @@ node_modules
 dist
 
 #static files
-static
+static/*
 
 # config file
 default.json
