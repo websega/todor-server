@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import path from 'path';
 import express, { Application, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import config from 'config';
@@ -25,12 +24,6 @@ app.use('/api/folder', folderRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.sendStatus(200);
-});
-
-app.get('*', (_, res: any) => {
-  let url = path.join(__dirname, '../client/dist/index.html', 'index.html');
-  if (!url.startsWith('/')) url = url.substring(1);
-  res.sendFile(url);
 });
 
 const start = async (): Promise<void> => {
