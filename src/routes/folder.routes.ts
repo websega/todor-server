@@ -102,7 +102,7 @@ folderRouter.post(
 
       await Folder.updateOne({ _id: folderId }, folder);
 
-      return res.send({ message: 'Task was marked as completed' });
+      return res.send({ message: 'Task description was updated' });
     } catch (error) {
       console.log(error);
       return res.send({ message: 'Server error' });
@@ -211,6 +211,8 @@ folderRouter.post(
       const urlApp = process.env.APP_URL
         ? `${process.env.APP_URL}static`
         : config.get('staticPath');
+        console.log(urlApp);
+        
 
       file.mv(`${urlApp}\\${avatarName}`);
 
