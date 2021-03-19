@@ -19,8 +19,7 @@ const dbUrl: string = process.env.dbUrl || config.get<string>('dbUrl');
 app.use(fileUpload({}));
 app.use(corsMiddleware);
 app.use(express.json());
-// app.use(express.static('static'));
-app.use(express.static(path.join(__dirname, './static'), { maxAge: 86400000 }));
+app.use(express.static(path.join(__dirname, 'static'), { maxAge: 86400000 }));
 app.use('/api/auth', authRouter);
 app.use('/api/folder', folderRouter);
 

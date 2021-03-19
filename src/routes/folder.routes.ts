@@ -211,8 +211,6 @@ folderRouter.post(
       const urlApp = process.env.APP_URL
         ? `${process.env.APP_URL}static`
         : config.get('staticPath');
-        console.log(urlApp);
-        
 
       file.mv(`${urlApp}\\${avatarName}`);
 
